@@ -31,7 +31,7 @@ public class TestCacheStore {
                 .addStore(JdbcStringBasedStoreConfigurationBuilder.class)
                 .segmented(false)
                 .shared(false)
-                .preload(true)
+                .preload(false)
                 .fetchPersistentState(true)
                 .table()
                 .dropOnExit(false)
