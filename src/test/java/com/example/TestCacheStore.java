@@ -27,7 +27,7 @@ public class TestCacheStore {
         configurationBuilder.memory().maxCount(2);
         configurationBuilder.clustering().cacheMode(CacheMode.LOCAL).hash().numOwners(1)
                 .persistence()
-                .passivation(true)
+                .passivation(false)
                 .addStore(JdbcStringBasedStoreConfigurationBuilder.class)
                 .segmented(false)
                 .shared(false)
@@ -64,6 +64,19 @@ public class TestCacheStore {
         cache.put(2, 2);
         cache.put(3, 3);
         //now some key is evicted and stored in store
-        assertEquals(2, cache.getAdvancedCache().withFlags(Flag.SKIP_CACHE_STORE).size());
+        assertEquals(2, cache.getAdvancedCache().withFlags(Flag.SKIP_CACHE_LOAD).size());
+    }
+
+    @Test
+    public void testWithoutPreload() {
+        Cache<String, String> cache = cm.getCache(CACHE_NAME);
+        cache.put("k1", "v1");
+        cache.put("k2", "v2");
+
+        cache.stop();
+        cache.start();
+
+        assertEquals(0, cache.size());
+        assertEquals(null, cache.get("k1"));
     }
 }
