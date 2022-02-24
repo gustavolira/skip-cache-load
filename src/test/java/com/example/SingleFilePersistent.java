@@ -2,10 +2,9 @@ package com.example;
 
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.CacheMode;
-import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.configuration.cache.SingleFileStoreConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
-import org.infinispan.context.Flag;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.persistence.jdbc.configuration.JdbcStringBasedStoreConfigurationBuilder;
@@ -14,9 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
-public class TestCacheStore {
+public class SingleFilePersistent {
 
     private EmbeddedCacheManager cm;
     private static final String CACHE_NAME = "jdbc";
@@ -57,23 +55,12 @@ public class TestCacheStore {
         configurationBuilder.clustering().cacheMode(CacheMode.LOCAL).hash().numOwners(1)
                 .persistence()
                 .passivation(false)
-                .addStore(JdbcStringBasedStoreConfigurationBuilder.class)
+                .addStore(SingleFileStoreConfigurationBuilder.class)
+                .location("/tmp")
                 .segmented(false)
                 .shared(false)
                 .preload(true)
-                .fetchPersistentState(true)
-                .table()
-                .dropOnExit(false)
-                .createOnStart(true)
-                .tableNamePrefix("tbl")
-                .idColumnName("ID_COLUMN").idColumnType("VARCHAR(255)")
-                .dataColumnName("DATA_COLUMN").dataColumnType("BYTEA")
-                .timestampColumnName("TIMESTAMP_COLUMN").timestampColumnType("BIGINT")
-                .connectionPool()
-                .driverClass("org.postgresql.Driver")
-                .connectionUrl("jdbc:postgresql://localhost:5432/postgres")
-                .username("postgres")
-                .password("changeme");
+                .fetchPersistentState(true);
 
         GlobalConfigurationBuilder gcb = new GlobalConfigurationBuilder().clusteredDefault().transport().defaultCacheName(CACHE_NAME);
         cm = new DefaultCacheManager(gcb.build(), configurationBuilder.build());
