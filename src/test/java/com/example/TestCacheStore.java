@@ -79,4 +79,5 @@ public class TestCacheStore {
         assertEquals(0, cache.size());
         assertEquals(null, cache.get("k1"));
     }
+
 }
